@@ -1,1 +1,1 @@
-Chieko Duncans | onid: duncansc
+This is my assignment-1 submission!
