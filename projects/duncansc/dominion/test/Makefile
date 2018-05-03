@@ -7,7 +7,7 @@ tests.out: unittest1.c dominion.c
 	
 	echo "unittest1.c:" >> tests.out
 	gcc -o unittest1 rngs.c dominion.c unittest1.c %(CFLAGS)
-	unittest1 >> tests.out
+	./unittest1 >> tests.out
 	gcov dominion.c >> tests.out
 
 clean:
