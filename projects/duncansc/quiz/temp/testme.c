@@ -10,27 +10,16 @@
 #include<string.h>
 #include<stdlib.h>
 #include<time.h>
-/*  try 1
+
 char inputChar()
 {
     // TODO: rewrite this function
     int randInt;
     char testC;
     
-    randInt = (rand() % (126 - 32)) + 32;
+    randInt = rand() % (126 - 32) + 32;
     testC = randInt;
     return testC;
-}
-*/
-// try2
-char inputChar()
-{
-    // TODO: rewrite this function
-    int randInt;
-    char testC;
-    char listC[9] = {'[', '(', '{', ' ', 'a', 'x', '}', ')', ']'};    
-
-    return listC[rand() % 9 ];
 }
 
 char *inputString()
@@ -38,28 +27,20 @@ char *inputString()
     // TODO: rewrite this function
     int randInt;
     char randC;
-    static char randString[6];
+    char randString[6];
     char* testString;
     int i; // iterator
- 
- // try 4 : all lower case alphabet test -- 7minutes +
- //  char* alphabetLow = "abcdefghijklmnopqrstuvwxyz";
-   char* resetLow = "rest";
 
     for(i=0; i<5; i++){
-       // randInt = (rand() % (126 - 32)) + 32;
-       // randC = randInt;
-       // randString[i] = randC;
-       // try 4
-       // randString[i] = alphabetLow[rand() % 26];
-        randString[i] = resetLow[rand() % 4];
+        randInt = rand() % (126 - 32) + 32;
+        randC = randInt;
+        randString[i] = randC;
     }
     
-    randString[5] = '\0';
+    randString[5] = "\n";
+    testString = randString;
 
-    return randString;
-  // try3: changed to "reset" to return all the time
-  // return "reset";
+    return testString;
 }
 
 void testme()
@@ -69,7 +50,6 @@ void testme()
   char c;
   int state = 0;
   while (1)
-//  while (tcCount < 100)
   {
     tcCount++;
     c = inputChar();
@@ -99,8 +79,7 @@ void testme()
 
 int main(int argc, char *argv[])
 {
-    //srand(time(NULL));
-    srand(100);
+    srand(time(NULL));
     testme();
     return 0;
 }
