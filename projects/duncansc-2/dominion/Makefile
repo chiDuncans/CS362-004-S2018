@@ -33,6 +33,14 @@ runtests: testDrawCard
 randomTestAdventurer: randomTestAdventurer.c dominion.o rngs.o
 	gcc  -o randomTestAdventurer -g  randomTestAdventurer.c dominion.o rngs.o $(CFLAGS)
 
+#Smithy random test
+randomtestcard1: randomtestcard1.c dominion.o rngs.o
+	gcc  -o randomtestcard1 -g  randomtestcard1.c dominion.o rngs.o $(CFLAGS)
+
+#Steward random test
+randomtestcard2: randomtestcard2.c dominion.o rngs.o
+	gcc  -o randomtestcard2 -g  randomtestcard2.c dominion.o rngs.o $(CFLAGS)
+
 runrandomtests: randomTestAdventurer 
 	./randomTestAdventurer &> unittestresult.out
 	gcov dominion.c >> unittestresult.out

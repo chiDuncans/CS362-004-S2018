@@ -32,22 +32,20 @@
 
 #define DEBUG 0
 #define NOISY_TEST 1
+#define MAX_PLAYER 4
 #define MAX_TESTS 1000
-// #define MAX_PLAYERS 4 //declared in dominion.h
-// #define MAX_HAND 500  //declared in dominion.h
-// #define MAX_DECK 500  //declared in dominion.h
 
-
-void supplyRandomCardNums(int p, struct gameState *state){
+void supplyRandomCardNums(int hand, int deck, int discard, int p, struct gameState *state){
+    int i, j;
 
     // set random hand card
-    state->handCount[p] = floor(Random() * MAX_HAND);
+    state->handCount[p] = hand;
     	
     // set random deck card
-    state->deckCount[p] = floor(Random() * MAX_DECK);
+    state->deckCount[p] = deck;
 
     // set random discard card
-    state->discardCount[p] = floor(Random() * MAX_DECK);
+    state->discardCount[p] = discard;
 }
 
 void checkDrawCard(int p, struct gameState *post) {
@@ -109,7 +107,7 @@ void checkTotalCount(int preHand, int preDeck, int _p, struct gameState *_post) 
 
 void checkCardEffectAdventurer(int p, struct gameState *post) {
     int r;
-      printf ("pre hand count, player 0: %d \n", post->handCount[p]);
+    //  printf ("pre hand count, player 0: %d \n", post->handCount[p]);
     //  printf ("pre deck count, player 0: %d \n", post->deckCount[p]);
     //  printf ("pre discard count, player 0: %d \n", post->discardCount[p]);
     r = cardEffectAdventurer(0, post, p, 0); // (drawntreasure = 0, state, currentPlayer, int z = 0)
@@ -117,7 +115,7 @@ void checkCardEffectAdventurer(int p, struct gameState *post) {
     assert (r == 0);  // Checking calling the function has error or not
 
     //  if( r == 0){  // Checking calling the function has error or not
-      printf ("post hand count, player 0: %d \n", post->handCount[p]);
+    //  printf ("post hand count, player 0: %d \n", post->handCount[p]);
     //  printf ("post deck count, player 0: %d \n", post->deckCount[p]);
     //  printf ("post discard count, player 0: %d \n", post->discardCount[p]);
     //  }
@@ -139,15 +137,12 @@ int main () {
     printf ("RANDOM TESTS.\n");
 
     // initialize game for valid number of players, 2 - 4
-    for(n = 2; n <= MAX_PLAYERS; n++){
+    for(n = 2; n <= MAX_PLAYER; n++){
 	
         // assign random testing values
 
 	p = 0; // player
 	initializeGame(n, k, 1, &G);
-	
- 	supplyRandomCardNums(p, &G);
-
 	handCount = G.handCount[p];
 	deckCount = G.deckCount[p];
 	discardCount = G.discardCount[p];
