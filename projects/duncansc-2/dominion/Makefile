@@ -41,8 +41,18 @@ randomtestcard1: randomtestcard1.c dominion.o rngs.o
 randomtestcard2: randomtestcard2.c dominion.o rngs.o
 	gcc  -o randomtestcard2 -g  randomtestcard2.c dominion.o rngs.o $(CFLAGS)
 
-runrandomtests: randomTestAdventurer 
+runrandomtestAdventurer: randomTestAdventurer 
 	./randomTestAdventurer &> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	cat dominion.c.gcov >> unittestresult.out
+
+runrandomtest1: randomtestcard1 
+	./randomtestcard1 &> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	cat dominion.c.gcov >> unittestresult.out
+
+runrandomtest2: randomtestcard2 
+	./randomtestcard2 &> unittestresult.out
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
