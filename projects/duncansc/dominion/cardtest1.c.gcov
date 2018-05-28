@@ -1,0 +1,363 @@
+        -:    0:Source:cardtest1.c
+        -:    0:Graph:cardtest1.gcno
+        -:    0:Data:cardtest1.gcda
+        -:    0:Runs:3
+        -:    0:Programs:1
+        -:    1:/**************************************************
+        -:    2: * File Name: cardtest1.c  - Adventurer Card Test
+        -:    3: * CS362_S2018
+        -:    4: * Assignment 4
+        -:    5: * Author: Chieko Duncans
+        -:    6: * Date: 2018-05-12
+        -:    7: * Description: card test for the Adventurer card
+        -:    8: * 	1) set the variables in the game state
+        -:    9: * 	    cards in hand
+        -:   10: * 	    card in deck
+        -:   11: * 	    	Test Case 1) deck card == 2
+        -:   12: * 	    		when user only pick trasure card twice
+        -:   13: * 	    		if not
+        -:   14: * 	    		deck needs to be filled
+        -:   15: * 	    	Test Case 2) deck card > 2
+        -:   16: * 	    		when user draw 2 treasure and 1 other card
+        -:   17: * 	    		if more other card drawn
+        -:   18: * 	    		deck need to be filled
+        -:   19: * 	    	Test Case 3) deck card < 2 
+        -:   20: * 	    		deck needs to be refilled
+        -:   21: * 	    cards in discard
+        -:   22: * 	  - set the first card as adventurer
+        -:   23: * 	2) play adventure
+        -:   24: * 	3) do assert
+        -:   25: * 	4) Check the game state
+        -:   26: *
+        -:   27: * Adventurer Card should do ...
+        -:   28: * 	1) let player draw 2 treasure cards, copper, silver, or gold
+        -:   29: * 	2) All drawn card should be discarded
+        -:   30: *
+        -:   31: * Post Condition should be...
+        -:   32: *      Test Case 1, 2, 3: 
+        -:   33: *      Deck > 2, 
+        -:   34: *      all deck cards are 1)"copper" 2)"silver 3)"gold"
+        -:   35: *      	1) cards in hand: pre + 2 -1 (2 treasure cards added, 1 adven card discarded)
+        -:   36: *      	2) cards in deck: - 2
+        -:   37: *
+        -:   38: *      Test Case 4, 5, 6: 
+        -:   39: *      Deck > 2, 
+        -:   40: *      1 deck card is  4)"copper" 5)"silver 6)"gold"
+        -:   41: *      Rest of the deck card is NOT treasure card
+        -:   42: *      1 discarded card is treasure card
+        -:   43: *      	1) cards in hand: pre + 2 -1 (2 treasure cards added, 1 adven card discarded)
+        -:   44: *      	2) cards in deck: 0
+        -:   45: *
+        -:   46: *      Test Case 7: 
+        -:   47: *      Deck = 2, 
+        -:   48: *      1 deck card is  4)"copper" 5)"silver 6)"gold"
+        -:   49: *      Another deck card is NOT treasure card
+        -:   50: *      1 discarded card is treasure card
+        -:   51: *      	1) cards in hand: pre + 1 - 1 (1 treasure cards added, 1 adven card discarded)
+        -:   52: *      	2) cards in deck: 0
+        -:   53: *
+        -:   54: *	Test Case 8:
+        -:   55: *	Deck = 0,
+        -:   56: *	discarded card > 2
+        -:   57: *	2 discarded card is treaure card. 
+        -:   58: *	Other cards are non treasure.
+        -:   59: *      	1) cards in hand: pre + 2 -1 (2 treasure cards added, 1 adven card discarded)
+        -:   60: *      	2) cards in deck: 0
+        -:   61: *
+        -:   62: *	Test Case 9:
+        -:   63: *	Deck = 0,
+        -:   64: *	discarded card > 2
+        -:   65: *	no treasure card in discarded pile
+        -:   66: *      	1) cards in hand: pre -1 ( 1 adventurer card discarded)
+        -:   67: *      	2) cards in deck: 0 
+        -:   68: *
+        -:   69: *    
+        -:   70: * ***********************************************/
+        -:   71:#include "dominion.h"
+        -:   72:#include "dominion_helpers.h"
+        -:   73:#include <string.h>
+        -:   74:#include <stdio.h>
+        -:   75:#include <assert.h>
+        -:   76:#include "rngs.h"
+        -:   77:#include <time.h>
+        -:   78:#include <math.h>
+        -:   79:
+        -:   80:#define DEBUG 0
+        -:   81:#define NOISY_TEST 1
+        -:   82:#define MAX_TESTS 1000
+        -:   83:// #define MAX_PLAYERS 4 //declared in dominion.h
+        -:   84:// #define MAX_HAND 500  //declared in dominion.h
+        -:   85:// #define MAX_DECK 500  //declared in dominion.h
+        -:   86:	
+       18:   87:void setTreasure(int p, struct gameState *_post, int count, int treasureType){
+        -:   88: 	int i;
+        -:   89:	
+       72:   90:	for(i = 0; i < count; i++){
+       54:   91:		_post->deck[p][i] = treasureType;
+        -:   92:	}
+        -:   93:	
+       18:   94:}
+        -:   95:
+        9:   96:void setTreasureInDiscard(int p, struct gameState *_post, int count, int treasureType){
+        -:   97: 	int i;
+        -:   98:	
+       18:   99:	for(i = 0; i < count; i++){
+        9:  100:		_post->discard[p][i] = treasureType;
+        9:  101:		_post->discardCount[p]++;
+        -:  102:	}
+        -:  103:	
+        9:  104:}
+        -:  105:
+       18:  106:int checkHandCount(int preHand, int _p, struct gameState *_post, int _preTreasureHand, int _preTreasureDiscard) {
+        -:  107:
+        -:  108:	int expected;
+        -:  109:
+       18:  110:	if(_preTreasureHand >= 2){ 
+        9:  111:		expected = (preHand + 2 - 1);
+        -:  112:	}
+        9:  113:	else if(_preTreasureHand = 1){
+        9:  114:		if(_preTreasureDiscard >= 1){
+        9:  115:			expected = (preHand + 2 - 1);
+        -:  116:		}
+        -:  117:		else{
+    #####:  118:			expected = (preHand + 1 - 1);
+        -:  119:		}
+        -:  120:	}
+        -:  121:	else{
+        -:  122:		if(_preTreasureDiscard >= 2){
+        -:  123:			expected = (preHand + 2 - 1);
+        -:  124:		}
+        -:  125:		else if(_preTreasureDiscard = 1){
+        -:  126:			expected = (preHand + 1 - 1);
+        -:  127:		}
+        -:  128:		else{
+        -:  129:			expected = (preHand - 1);
+        -:  130:		}
+        -:  131:	}
+        -:  132:
+        -:  133:	//if(_post->handCount[_p] != (preHand + 2 - 1)){
+       18:  134:	if(_post->handCount[_p] != expected){
+        -:  135:		//	printf ("FAILED \n   expected hand count: %d\n", (preHand + 2 - 1));
+    #####:  136:			printf ("FAILED \n   expected hand count: %d\n", expected);
+    #####:  137:			printf ("   post hand count: %d\n", _post->handCount[_p]);
+    #####:  138:		return 1;
+        -:  139:	}
+        -:  140:	else{
+       18:  141:		return 0;
+        -:  142:	}
+        -:  143:}
+        -:  144:
+       18:  145:int checkDeckCount(int preDeck, int _p, struct gameState *_post, int _preTreasureHand, int _preTreasureDiscard, int preDiscard) {
+        -:  146:
+        -:  147:	int expected;
+        -:  148:
+       18:  149:	if(_preTreasureHand >= 2){ 
+        9:  150:		expected = (preDeck - 2 - (_post->discardCount[_p] - preDiscard));
+        -:  151:	}
+        9:  152:	else if(_preTreasureHand = 1){
+        9:  153:		if(_preTreasureDiscard >= 1){
+        9:  154:			expected = (preDeck - _post->discardCount[_p] - 1);
+        -:  155:		}
+        -:  156:		else{
+    #####:  157:			expected = 0;
+        -:  158:		}
+        -:  159:	}
+        -:  160:	else{
+        -:  161:		if(_preTreasureDiscard >= 2){
+        -:  162:			expected = 0; //(preDiscard - _post->discardCount[_p] - 2);
+        -:  163:		}
+        -:  164:		else if(_preTreasureDiscard = 1){
+        -:  165:			expected = 0;
+        -:  166:		}
+        -:  167:		else{
+        -:  168:			expected = 0;
+        -:  169:		}
+        -:  170:	}
+        -:  171:
+       18:  172:	if(_post->deckCount[_p] != expected){
+    #####:  173:		printf ("FAILED \n   expected deck count: %d\n", expected);
+    #####:  174:		printf ("   post deck count: %d\n", _post->deckCount[_p]);
+    #####:  175:		return 1;
+        -:  176:	}
+        -:  177:	else{
+       18:  178:		return 0;
+        -:  179:	}
+        -:  180:
+        -:  181:	//   assert(_post->deckCount[_p] == (preDeck -2));
+        -:  182:}
+        -:  183:
+    #####:  184:int checkDiscardCount(int _p, struct gameState *_post) {
+        -:  185:
+    #####:  186:	if(_post->discardCount[_p] != 0){
+    #####:  187:		return 1;
+        -:  188:	}
+        -:  189:	else{
+    #####:  190:		return 0;
+        -:  191:	}
+        -:  192:
+        -:  193:	//   assert(_post->discardCount[_p] == 0);
+        -:  194:}
+        -:  195:
+    #####:  196:int checkTotalCount(int preHand, int preDeck, int _p, struct gameState *_post) {
+        -:  197:
+    #####:  198:	if((_post->handCount[_p] + _post->deckCount[_p]) != (preHand + preDeck)){
+    #####:  199:		return 1;
+        -:  200:	}
+        -:  201:	else{
+    #####:  202:		return 0;
+        -:  203:	}
+        -:  204:
+        -:  205:
+        -:  206:	//    assert((_post->handCount[_p] + _post->deckCount[_p]) == (preHand + preDeck));
+        -:  207:}
+        -:  208:
+       18:  209:void checkCardEffectAdventurer(int p, struct gameState *post, int handPos) {
+        -:  210:	int r;
+        -:  211:	int temphand[MAX_HAND]; // fixed list #3
+       18:  212:	printf ("pre hand count, player 0: %d \n", post->handCount[p]);
+       18:  213:	printf ("pre deck count, player 0: %d \n", post->deckCount[p]);
+       18:  214:	printf ("pre discard count, player 0: %d \n", post->discardCount[p]);
+        -:  215:	
+        -:  216:	// fixed list #3
+        -:  217:	//r = cardEffectAdventurer(0, post, p, 0); // (drawntreasure = 0, state, currentPlayer, int z = 0)
+       18:  218:	r = playAdventurer(0, p, 0, temphand, post, handPos);
+       18:  219:	assert (r == 0);  // Checking calling the function has error or not
+        -:  220:
+        -:  221:	//  if( r == 0){  // Checking calling the function has error or not
+       18:  222:	printf ("post hand count, player 0: %d \n", post->handCount[p]);
+       18:  223:	printf ("post deck count, player 0: %d \n", post->deckCount[p]);
+       18:  224:	printf ("post discard count, player 0: %d \n", post->discardCount[p]);
+        -:  225:	//  }
+        -:  226:
+       18:  227:}
+        -:  228:
+        3:  229:int main () {
+        -:  230:
+        -:  231:	int n, p, deckCount, discardCount, handCount, error, testcase, treasureType, treasureCountDeck, treasureCountDiscard;
+        -:  232:
+        3:  233:	int k[10] = {adventurer, council_room, feast, gardens, mine,
+        -:  234:		remodel, smithy, village, baron, great_hall};
+        -:  235:
+        -:  236:	struct gameState G;
+        -:  237:
+        3:  238:	error = 0;
+        -:  239:
+        3:  240:	printf ("Testing Adventurer Card.\n");
+        -:  241:
+        -:  242:	/*************************************************************
+        -:  243:	 * Valid Case Tests
+        -:  244: 	 *      Test Case 1, 2, 3: 
+        -:  245: 	 *      Deck > 2, 
+        -:  246:	 *      all deck cards are 1)"copper" 2)"silver 3)"gold"
+        -:  247: 	 *      	1) cards in hand: pre + 2 -1 (2 treasure cards added, 1 adven card discarded)
+        -:  248:  	 *      	2) cards in deck: - 2
+        -:  249:	 *
+        -:  250:	 * **********************************************************/
+        3:  251:	printf ("VALID CASE TESTS.\n");
+        -:  252:
+        -:  253:
+        -:  254:	// initialize game for valid number of players 2
+        3:  255:	n = 2;
+        -:  256:
+        3:  257:	p = n-2; // set player for 0
+        -:  258:
+        3:  259:	testcase = 1;
+        3:  260:	treasureType = copper; //testcase 1: copper, 2: silver, 3: gold
+       12:  261:	for(testcase = 1; testcase < 4; testcase++){ 
+        9:  262:		printf ("\nVALID CASE TEST %d.\n", testcase);
+        -:  263:
+        9:  264:		treasureCountDeck = 0;
+        9:  265:		treasureCountDiscard = 0;
+        9:  266:		initializeGame(n, k, 3, &G);  // (num of players, kingdomCards[10], randomSeed, game state)
+        -:  267:
+        9:  268:		setTreasure(p, &G, G.deckCount[p], treasureType++);  // set and increment the treasureType 
+        9:  269:		treasureCountDeck = G.deckCount[p];	
+        9:  270:		treasureCountDiscard = 0;	
+        -:  271:	
+        9:  272:		deckCount = G.deckCount[p];
+        9:  273:		printf("\nUpdated Deck Card Count: %d\n\n", deckCount);
+        9:  274:		handCount = G.handCount[p];
+        9:  275:		discardCount = G.discardCount[p];
+        -:  276:
+        9:  277:		G.hand[p][(handCount - 1)] = k[0]; // current hand on Adventurer
+        -:  278:
+        -:  279:		// fixed list #3
+        -:  280:		//checkCardEffectAdventurer(p, &G);
+        9:  281:		checkCardEffectAdventurer(p, &G, (handCount - 1));
+        9:  282:		error += checkHandCount(handCount, p, &G, treasureCountDeck, treasureCountDiscard);
+        -:  283:
+        9:  284:		error += checkDeckCount(deckCount, p, &G, treasureCountDeck, treasureCountDiscard, discardCount);
+        -:  285:	}
+        -:  286: 
+        -:  287:	/************************************************************** 
+        -:  288:	* Test Case 4, 5, 6: 
+        -:  289: 	*      Deck > 2, 
+        -:  290: 	*      1 deck card is  4)"copper" 5)"silver 6)"gold"
+        -:  291: 	*      Rest of the deck card is NOT treasure card
+        -:  292:	 *      1 discarded card is treasure card
+        -:  293: 	*      	1) cards in hand: pre + 2 -1 (2 treasure cards added, 1 adven card discarded)
+        -:  294: 	*      	2) cards in deck: 0
+        -:  295: 	*************************************************************/
+        -:  296:
+        3:  297:	testcase = 4;
+        3:  298:	treasureType = copper; //testcase 1: copper, 2: silver, 3: gold
+       12:  299:	for(testcase = 4; testcase < 7; testcase++){ 
+        9:  300:		printf ("\nVALID CASE TEST %d.\n", testcase);
+        -:  301:
+        9:  302:		initializeGame(n, k, 3, &G);  // (num of players, kingdomCards[10], randomSeed, game state)
+        -:  303:
+        9:  304:		setTreasure(p, &G, 1, treasureType++);  // set 1 deck card and increment the treasureType 
+        9:  305:		treasureCountDeck = 1;	
+        9:  306:		setTreasureInDiscard(p, &G, 1, treasureType++);  // set 1 deck card and increment the treasureType 
+        9:  307:		treasureCountDiscard = 1;	
+        -:  308:
+        9:  309:		deckCount = G.deckCount[p];
+        9:  310:		printf("\nUpdated Deck Card Count: %d\n\n", deckCount);
+        9:  311:		handCount = G.handCount[p];
+        9:  312:		discardCount = G.discardCount[p];
+        -:  313:
+        9:  314:		G.hand[p][(handCount - 1)] = k[0]; // current hand on Adventurer
+        -:  315:
+        -:  316:		// fixed list #3
+        -:  317:		//checkCardEffectAdventurer(p, &G);
+        9:  318:		checkCardEffectAdventurer(p, &G, (handCount - 1));
+        9:  319:		error += checkHandCount(handCount, p, &G, treasureCountDeck, treasureCountDiscard);
+        -:  320:
+        9:  321:		error += checkDeckCount(deckCount, p, &G, treasureCountDeck, treasureCountDiscard, discardCount);
+        -:  322:	}
+        -:  323:
+        -:  324:/*
+        -:  325:	// valid case 1, 2, 3
+        -:  326:	for(i = 1; i < 4; i++){
+        -:  327:	initializeGame(n, k, 3, &G);  // (num of players, kingdomCards[10], randomSeed, game state)
+        -:  328:		deckCount = G.deckCount[p];
+        -:  329:
+        -:  330:		// draw cards until deckCount is 1, 2, or 3
+        -:  331:		for(j = deckCount; j > i ; j--){
+        -:  332:			drawCard(p, &G);
+        -:  333:			discardCard((G.handCount[p] - 1), p, &G, 1);  
+        -:  334:		}
+        -:  335:		deckCount = G.deckCount[p];
+        -:  336:		printf("\nUpdated Deck Card Count: %d\n\n", deckCount);
+        -:  337:		handCount = G.handCount[p];
+        -:  338:		discardCount = G.discardCount[p];
+        -:  339:
+        -:  340:		G.hand[p][(handCount - 1)] = k[0]; // current hand on Adventurer
+        -:  341:
+        -:  342:		// fixed list #3
+        -:  343:		//checkCardEffectAdventurer(p, &G);
+        -:  344:		checkCardEffectAdventurer(p, &G, (handCount - 1));
+        -:  345:		error += checkHandCount(handCount, p, &G);
+        -:  346:
+        -:  347:		error += checkDeckCount(deckCount, p, &G);
+        -:  348:	}
+        -:  349:*/
+        3:  350:	if(error == 0){
+        3:  351:		printf ("ALL TESTS PASSED\n");
+        -:  352:	}
+        -:  353:	else{
+        -:  354:
+    #####:  355:		printf ("Functional Errors: %d\n", error);
+        -:  356:	}
+        3:  357:	return 0;
+        -:  358:}

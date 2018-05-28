@@ -18,6 +18,9 @@ badTestDrawCard: badTestDrawCard.c dominion.o rngs.o
 testBuyCard: testDrawCard.c dominion.o rngs.o
 	gcc -o testDrawCard -g  testDrawCard.c dominion.o rngs.o $(CFLAGS)
 
+testInit: testInit.c dominion.o rngs.o
+	gcc -o testInit -g  testDrawCard.c dominion.o rngs.o $(CFLAGS)
+
 testAll: dominion.o testSuite.c
 	gcc -o testSuite testSuite.c -g  dominion.o rngs.o $(CFLAGS)
 
@@ -37,6 +40,22 @@ rununittest1: unittest1
 	./unittest1 &> unittest1.out
 	gcov dominion.c >> unittest1.out
 	cat dominion.c.gcov >> unittest1.out
+
+unittest2: unittest2.c dominion.o rngs.o
+	gcc  -o  unittest2 -g unittest2.c dominion.o rngs.o $(CFLAGS)
+
+rununittest2: unittest2
+	./unittest1 &> unittest2.out
+	gcov dominion.c >> unittest2.out
+	cat dominion.c.gcov >> unittest2.out
+
+unittest3: unittest3.c dominion.o rngs.o
+	gcc  -o  unittest3 -g unittest3.c dominion.o rngs.o $(CFLAGS)
+
+rununittest3: unittest3
+	./unittest3 &> unittest3.out
+	gcov dominion.c >> unittest3.out
+	cat dominion.c.gcov >> unittest3.out
 
 #Adventurer card test
 cardtest1: cardtest1.c dominion.o rngs.o
@@ -90,6 +109,10 @@ randomtestcard1: randomtestcard1.c dominion.o rngs.o
 randomtestcard2: randomtestcard2.c dominion.o rngs.o
 	gcc  -o randomtestcard2 -g  randomtestcard2.c dominion.o rngs.o $(CFLAGS)
 
+#Village random test
+randomtestcard4: randomtestcard4.c dominion.o rngs.o
+	gcc  -o randomtestcard4 -g  cardtest4.c dominion.o rngs.o $(CFLAGS)
+
 runrandomtestAdventurer: randomTestAdventurer 
 	./randomTestAdventurer &> randomtestadventurer.out
 	gcov dominion.c >> randomtestadventurer.out
@@ -109,6 +132,11 @@ runrandomtest2: randomtestcard2
 	./randomtestcard2 &> randomtestcard2.out
 	gcov dominion.c >> randomtestcard2.out
 	cat dominion.c.gcov >> randomtestcard2.out
+
+runrandomtestcard4: randomtestcard4
+	./randomtestcard4 &> randomtestcard4.out
+	gcov dominion.c >> randomtestcard4.out
+	cat dominion.c.gcov >> randomtestcard4.out
 
 player: player.c interface.o
 	gcc -o player player.c -g  dominion.o rngs.o interface.o $(CFLAGS)

@@ -1,3 +1,9 @@
+/*****************************************
+ * original: testBuyCard.c
+ * Debugged by Chieko Duncans
+ * Date 05-27-2018
+ *
+ * ****************************************/
 #include "dominion.h"
 #include "dominion_helpers.h"
 #include <string.h>

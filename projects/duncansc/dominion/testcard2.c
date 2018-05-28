@@ -204,8 +204,9 @@ void checkCardEffectSteward(struct gameState *post, int p, int _handPos, int cho
 	printf ("pre hand count: %d\n", post->handCount[p]);
 	printf ("pre deck count: %d \n", post->deckCount[p]);
 	printf ("pre coin count: %d\n", post->coins);
-	r = cardEffectSteward(post, p, choice1, choice2, choice3, _handPos); 
-
+	//r = cardEffectSteward(post, p, choice1, choice2, choice3, _handPos); 
+	r = cardEffect(steward, choice1, choice2, choice3, post, _handPos, 0);
+	
 	assert (r == 0);  // Checking calling the function has error or not
 
 	//  if( r == 0){  // Checking calling the function has error or not
