@@ -151,7 +151,7 @@ int checkDeckCount(int preDeck, int _p, struct gameState *_post, int _preTreasur
 	}
 	else if(_preTreasureHand = 1){
 		if(_preTreasureDiscard >= 1){
-			expected = 0; //(0 + (preDiscard - _post->discardCount[_p] - 1));
+			expected = (preDeck - _post->discardCount[_p] - 1);
 		}
 		else{
 			expected = 0;
@@ -168,9 +168,10 @@ int checkDeckCount(int preDeck, int _p, struct gameState *_post, int _preTreasur
 			expected = 0;
 		}
 	}
+
 	if(_post->deckCount[_p] != expected){
-			printf ("FAILED \n   expected deck count: %d\n", expected);
-			printf ("   post deck count: %d\n", _post->deckCount[_p]);
+		printf ("FAILED \n   expected deck count: %d\n", expected);
+		printf ("   post deck count: %d\n", _post->deckCount[_p]);
 		return 1;
 	}
 	else{
@@ -296,7 +297,7 @@ int main () {
 	testcase = 4;
 	treasureType = copper; //testcase 1: copper, 2: silver, 3: gold
 	for(testcase = 4; testcase < 7; testcase++){ 
-		printf ("VALID CASE TEST %d.\n", testcase);
+		printf ("\nVALID CASE TEST %d.\n", testcase);
 
 		initializeGame(n, k, 3, &G);  // (num of players, kingdomCards[10], randomSeed, game state)
 
