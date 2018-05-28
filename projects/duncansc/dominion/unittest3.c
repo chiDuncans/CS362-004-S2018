@@ -1,5 +1,5 @@
 /*****************************************
- * original: testBuyCard.c
+ * original: testShuffle.c
  * Debugged by Chieko Duncans
  * Date 05-27-2018
  *
