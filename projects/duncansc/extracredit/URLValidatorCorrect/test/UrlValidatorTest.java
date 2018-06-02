@@ -71,23 +71,32 @@ protected void setUp() {
    protected String createRandAlphaNum(int length, boolean withSlash) {
 	   
 	   String alpha;
+	   alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	   
+       Random random = new SecureRandom();
+       if (length <= 0) {
+           throw new IllegalArgumentException("String length must be a positive integer");
+       }
+       
+       StringBuilder sb = new StringBuilder(length);
+       
 	   if(withSlash) {
-		   alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/";
-	   }
-	   else {
-		   alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	   } 
-	        Random random = new SecureRandom();
-	        if (length <= 0) {
-	            throw new IllegalArgumentException("String length must be a positive integer");
-	        }
-
-	        StringBuilder sb = new StringBuilder(length);
+		   int counter = 0;
 	        for (int i = 0; i < length; i++) {
 	            sb.append(alpha.charAt(random.nextInt(alpha.length())));
-	        }
-
-
+	            
+	            if(counter == (length % 5) + 5) {
+	            	sb.append("/");
+	            	length++;
+	            	counter = 0;
+	            }
+	        } 
+	   }
+	   else {
+	        for (int i = 0; i < length; i++) {
+	            sb.append(alpha.charAt(random.nextInt(alpha.length())));
+	        } 
+	   } 
 	   return sb.toString();
   }
    
@@ -256,7 +265,9 @@ protected void setUp() {
     * Added at 3:49 pm
     */
    public void testTenTimes() {
-	 for(int i = 0; i < 10; i++) {
+	   
+	   // All valid cases
+	 for(int i = 0; i < 1000; i++) {
 		 //System.err.println("in testTenTimes Line 179");
 		   String randScheme = createRandScheme();
 		   String randAuthority = createRandAuthority();
@@ -277,14 +288,17 @@ protected void setUp() {
 	       testRandomIsValid(randomTestUrlParts, UrlValidator.ALLOW_ALL_SCHEMES);
 	       setUp();
 		}
-	 
-	 for(int i = 0; i < 10; i++) {
+	
+	 // All Invalid cases
+	 for(int i = 0; i < 100; i++) {
 		 //System.err.println("in testTenTimes Line 179");
-		   String randScheme = makeInvalid(createRandScheme(), 1);
-		   String randAuthority = makeInvalid(createRandAuthority(), 1);
-		   String randPort = makeInvalid(createRandPort(), 1);
-		   String randPath = makeInvalid(createRandPath(), 1);
-		   String randQuery = makeInvalid(createRandQuery(), 1);
+		 for(int j = 1; j < 5; j++) {
+		
+		   String randScheme = makeInvalid(createRandScheme(), j);
+		   String randAuthority = makeInvalid(createRandAuthority(), j);
+		   String randPort = makeInvalid(createRandPort(), j);
+		   String randPath = makeInvalid(createRandPath(), j);
+		   String randQuery = makeInvalid(createRandQuery(), j);
 		   
 		   ResultPair[] randTestScheme = {new ResultPair(randScheme, false)};
 		   ResultPair[] randTestAuthority = {new ResultPair(randAuthority, false)};
@@ -298,7 +312,9 @@ protected void setUp() {
 		   
 	       testRandomIsValid(randomTestUrlParts, UrlValidator.ALLOW_ALL_SCHEMES);
 	       setUp();
+		 }
 		}
+		
    }
   
    
@@ -383,6 +399,7 @@ protected void setUp() {
       boolean result = urlVal.isValid(url);
       if(result == true)
      	 System.out.println(url);
+      System.out.println("Line 393: url " + url + "\nexpected " + expected + "\nresult " + result + "\n");
       assertEquals(url, expected, result);
       if (printStatus) {
          if (printIndex) {
