@@ -105,7 +105,75 @@ public class UrlValidatorTest extends TestCase {
 	   }
 
    }
+	
+   /*******************************************************************
+   ** Random String Creating Helper Functions
+   ** 	returns specifically selected type of string as needed
+   **	createRandAlpha(int length): use for scheme, authority...
+   **	createRandAlphaNum(int length, boolean withSlash): if withSlash is passed as true
+   **		it returns with slash in the string.  Ex: bb223/br
+   **	createRandNum(int min, int max): use for creating random port #
+   ********************************************************************/
+	   protected String createRandAlpha(int length) {
+	   
+	    String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	    
+	        Random random = new SecureRandom();
+	        if (length <= 0) {
+	            throw new IllegalArgumentException("String length must be a positive integer");
+	        }
+
+	        StringBuilder sb = new StringBuilder(length);
+	        for (int i = 0; i < length; i++) {
+	            sb.append(alpha.charAt(random.nextInt(alpha.length())));
+	        }
+
+
+	   return sb.toString();
+   }
    
+   protected String createRandAlphaNum(int length, boolean withSlash) {
+	   
+	   String alpha;
+	   alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	   
+       Random random = new SecureRandom();
+       if (length <= 0) {
+           throw new IllegalArgumentException("String length must be a positive integer");
+       }
+       
+       StringBuilder sb = new StringBuilder(length);
+       
+	   if(withSlash) {
+		   int counter = 0;
+	        for (int i = 0; i < length; i++) {
+	            sb.append(alpha.charAt(random.nextInt(alpha.length())));
+	            
+	            if(counter == (length % 5) + 5) {
+	            	sb.append("/");
+	            	length++;
+	            	counter = 0;
+	            }
+	        } 
+	   }
+	   else {
+	        for (int i = 0; i < length; i++) {
+	            sb.append(alpha.charAt(random.nextInt(alpha.length())));
+	        } 
+	   } 
+	   return sb.toString();
+  }
+   
+   protected String createRandNum(int min, int max) {
+	    
+	        Random rand = new SecureRandom();
+	 	    int num = rand.nextInt(max - min) + min;
+
+	   return String.valueOf(num);
+ }
+    /*******************************************************************
+   ** End of Random String Creating Helper Functions
+   ********************************************************************/  
 
 
 }
