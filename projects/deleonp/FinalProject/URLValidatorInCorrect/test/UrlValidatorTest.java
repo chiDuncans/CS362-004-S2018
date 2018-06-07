@@ -1,7 +1,7 @@
-
-
+import java.util.Random;
 import java.util.Scanner;
 import junit.framework.TestCase;
+import java.security.SecureRandom;
 
 //You can use this as a skeleton for your 3 different test approach
 //It is an optional to use this file, you can generate your own test file(s) to test the target function!
@@ -89,7 +89,8 @@ public class UrlValidatorTest extends TestCase {
    public void testIsValid()
    {
 	   UrlValidator urlValidator = new UrlValidator(scheme);
-
+	   System.out.printf("\n\nPartitioning Valid Testing\n");
+	   
 	   for(int i = 0; i<scheme.length; i++) {
 		   for(int j=0; j<authority.length; j++) {
 			   for(int k=0; k<path.length; k++) {
@@ -103,6 +104,20 @@ public class UrlValidatorTest extends TestCase {
 			   }
 		   }
 	   }
+	   System.out.printf("\nEnd Of Partitioning Valid Testing\n\n");
+	   
+	   System.out.printf("\nPartitioning Special Scheme Valid Testing\n");
+	   for(int i = 0; i < 100; i++) {
+		  // String testURL = createRandScheme() + "en.wikipedia.org";
+		   String testURL = createRandScheme() + "google.com";
+		   
+		  // assertTrue(testURL, urlValidator.isValid(testURL));
+		   if(!urlValidator.isValid(testURL)) {
+			   System.err.println(testURL + " failed");
+		   }
+
+	   }
+	   System.out.printf("\nEnd Of Partitioning Special Scheme Valid Testing\n\n");	   
 
    }
 	
@@ -171,9 +186,81 @@ public class UrlValidatorTest extends TestCase {
 
 	   return String.valueOf(num);
  }
+   protected String createRandScheme() {
+	   // valid "Alpha + (Alnum | + | - | . )
+	   
+	   // get random length of Scheme
+	   Random rand = new SecureRandom();
+	   
+	   // length - 1 of Scheme
+	   int num = rand.nextInt((10 - 3) + 1) + 3;
+
+	   return (createRandAlpha(1) + createRandAlphaNum(num, false) + "://");
+   }
     /*******************************************************************
    ** End of Random String Creating Helper Functions
    ********************************************************************/  
 
 
 }
+
+/*
+
+public class UrlValidatorTest extends TestCase {
+
+
+   public UrlValidatorTest(String testName) {
+      super(testName);
+   }
+
+   
+   
+   public void testManualTest()
+   {
+	   String[] schemes = {"http","https","imap","ftp","ssh"};
+	   String	urlStr;
+	   
+	   Scanner  userIn = new Scanner(System.in); 	   
+	   UrlValidator urlValidator = new UrlValidator(schemes);
+	   
+	   while (true) {
+		   urlStr = userIn.nextLine();
+		   
+		   if (urlStr == "")
+			   break;
+		   
+		   if (urlValidator.isValid(urlStr)) {
+			   System.out.println("url is valid");
+		   } else {
+			   System.out.println("url is invalid");
+		   }   
+	   }
+	   System.out.println("Exiting Test");
+	   userIn.close(); 
+   }
+   
+   
+   public void testYourFirstPartition()
+   {
+	 //You can use this function to implement your First Partition testing	
+	   UrlValidator urlVal = new UrlValidator(UrlValidator.ALLOW_2_SLASHES);
+	   
+
+   }
+   
+   public void testYourSecondPartition(){
+		 //You can use this function to implement your Second Partition testing	   
+
+   }
+   //You need to create more test cases for your Partitions if you need to 
+   
+   public void testIsValid()
+   {
+	   //You can use this function for programming based testing
+
+   }
+   
+
+
+}
+*/
